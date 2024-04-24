@@ -54,6 +54,9 @@ module.exports = (sequelize, DataTypes) => {
       nomor_telepon: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: {
+          msg: "Nomor Telepon Sudah Terdaftar",
+        },
         validate: {
           notEmpty: {
             msg: "Nomor Telepon Tidak Boleh Kosong",

@@ -34,9 +34,9 @@ class Controller {
       }
 
       let body = {
-        nama,
-        email,
-        password,
+        nama: nama.trim(),
+        email: email.toLowerCase().trim(),
+        password: password.trim(),
         nomor_telepon,
         role,
       };

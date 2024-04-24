@@ -45,6 +45,12 @@ const handleError = (err, req, res, next) => {
   } else if (err.name === `Stok Tersedia Kurang Dari`) {
     code = 400;
     message = `Stok Tersedia Kurang Dari ${err.stok}`;
+  } else if (err.name === "Nomor Telepon Minimal 8 Angka") {
+    code = 400;
+    message = "Nomor Telepon Minimal 8 Angka";
+  } else if (err.name === "Nomor Telepon Maksimal 16 Angka") {
+    code = 400;
+    message = "Nomor Telepon Maksimal 16 Angka";
   }
 
   // 404
