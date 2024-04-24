@@ -39,6 +39,9 @@ const handleError = (err, req, res, next) => {
   } else if (err.name === "Nomor Telepon Sudah Terdaftar") {
     code = 400;
     message = "Nomor Telepon Sudah Terdaftar";
+  } else if (err.name === "Konfirmasi Password Tidak Cocok") {
+    code = 400;
+    message = "Konfirmasi Password Tidak Cocok";
   }
 
   // 404
