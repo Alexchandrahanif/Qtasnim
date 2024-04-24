@@ -1,6 +1,5 @@
 const Controller = require("../controllers/stokBarang");
 const authentication = require("../middleware/authentication");
-
 const stokBarangRouter = require("express").Router();
 
 stokBarangRouter.get("/", authentication, Controller.getAll);

@@ -44,7 +44,7 @@ const handleError = (err, req, res, next) => {
     message = "Konfirmasi Password Tidak Cocok";
   } else if (err.name === `Stok Tersedia Kurang Dari`) {
     code = 400;
-    message = `Stok Tersedia Kurang Dari ${err.stok}`;
+    message = `Stok Tersedia Kurang Dari ${err.stok}, tersisa ${err.sisa}`;
   } else if (err.name === "Nomor Telepon Minimal 8 Angka") {
     code = 400;
     message = "Nomor Telepon Minimal 8 Angka";

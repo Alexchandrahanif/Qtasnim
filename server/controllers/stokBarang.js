@@ -1,4 +1,6 @@
 const { StokBarang, History, User } = require("../models");
+const moment = require("moment");
+const { Op } = require("sequelize");
 
 class Controller {
   // GET ALL
@@ -81,7 +83,13 @@ class Controller {
     try {
       const { nama_barang, stok, jenis_barang } = req.body;
 
-      let body = { nama_barang, stok, jenis_barang };
+      let body = {
+        nama_barang,
+        stok,
+        jenis_barang,
+        jumlah_terjual: 0,
+        tanggal_transaksi: new Date(),
+      };
 
       const data = await StokBarang.create(body);
 
@@ -121,10 +129,17 @@ class Controller {
 
       await History.create(body);
 
-      await StokBarang.update({
-        stok: data.stok + jumlah,
-        tanggal_transaksi: new Date(),
-      });
+      await StokBarang.update(
+        {
+          stok: +data.stok + +jumlah,
+          tanggal_transaksi: new Date(),
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
 
       res.status(200).json({
         statusCode: 200,
@@ -153,7 +168,11 @@ class Controller {
       }
 
       if (jumlah > data.stok) {
-        throw { name: "Stok Tersedia Kurang Dari", stok: jumlah };
+        throw {
+          name: "Stok Tersedia Kurang Dari",
+          stok: jumlah,
+          sisa: data.stok,
+        };
       }
 
       let body = {
@@ -165,10 +184,17 @@ class Controller {
 
       await History.create(body);
 
-      await StokBarang.update({
-        stok: data.stok - jumlah,
-        tanggal_transaksi: new Date(),
-      });
+      await StokBarang.update(
+        {
+          stok: +data.stok - +jumlah,
+          tanggal_transaksi: new Date(),
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
 
       res.status(200).json({
         statusCode: 200,
@@ -183,6 +209,8 @@ class Controller {
   static async update(req, res, next) {
     try {
       const { id } = req.params;
+      const { nama_barang, jenis_barang } = req.body;
+
       const data = await StokBarang.findOne({
         where: {
           id,
@@ -192,6 +220,8 @@ class Controller {
       if (!data) {
         throw { name: "Id Stok barang Tidak Ditemukan" };
       }
+
+      await StokBarang.update({ nama_barang, jenis_barang }, { where: { id } });
 
       res.status(200).json({
         statusCode: 200,

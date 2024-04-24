@@ -23,12 +23,9 @@ import {
   InfoCircleOutlined,
   ArrowLeftOutlined,
   EditOutlined,
-  PlusCircleOutlined,
   DeleteOutlined,
-  MinusCircleOutlined,
   DownCircleOutlined,
 } from "@ant-design/icons";
-
 import { logo } from "../assets";
 
 const { RangePicker } = DatePicker;
@@ -37,30 +34,22 @@ const { Option } = Select;
 
 import { useNavigate } from "react-router-dom";
 
-function HomePage() {
+function DetailPage() {
   const navigate = useNavigate();
-
-  const [stokBarang, setStokBarang] = useState([]);
-
+  const [penjualan, setPenjualan] = useState([]);
+  const [awal, setAwal] = useState(null);
+  const [akhir, setAkhir] = useState(null);
   const [dataSearch, setDataSearch] = useState(null);
+  const [selectedSingleDate, setSelectedSingleDate] = useState(null);
 
-  const [nama, setNama] = useState("");
-  const [stok, setStok] = useState(0);
-  const [jenis, setJenis] = useState("Jenis Barang");
-
-  const [jumlah, setJumlah] = useState("");
-
-  const [statusStok, setStatusStok] = useState("");
+  const [produk, setProduk] = useState("");
+  const [plat, setPlat] = useState("");
 
   const [limit, setLimit] = useState(15);
-
-  const [idBarang, setIdBarang] = useState("");
 
   const [editingData, setEditingData] = useState(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const [isModalStokVisible, setIsModalStokVisible] = useState(false);
 
   const [hapus, setHapus] = useState(null);
 
@@ -69,8 +58,17 @@ function HomePage() {
       limit: limit,
     };
 
+    if (selectedSingleDate !== null) {
+      queryParams.tanggal = selectedSingleDate;
+    }
+
     if (dataSearch !== null) {
       queryParams.search = dataSearch;
+    }
+
+    if (awal && akhir) {
+      queryParams.awal = awal;
+      queryParams.akhir = akhir;
     }
 
     axios({
@@ -83,18 +81,20 @@ function HomePage() {
     })
       .then((response) => {
         const data = response.data.data;
-        setStokBarang(data);
+        setPenjualan(data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, [
     dataSearch,
+    awal,
+    akhir,
+    selectedSingleDate,
     isModalVisible,
     limit,
     hapus,
     editingData,
-    isModalStokVisible,
   ]);
 
   const handleOk = () => {
@@ -103,96 +103,51 @@ function HomePage() {
         url: `http://localhost:3000/stokBarang/${editingData.id}`,
         method: "PATCH",
         data: {
-          nama_barang: nama,
-          jenis_barang: jenis,
-        },
-        headers: {
-          authorization: localStorage.getItem("authorization"),
+          produk: produk,
+          plat: plat,
         },
       })
         .then((response) => {
           message.success(response.data.message);
         })
         .catch((error) => {
-          message.error(error.response.data.message);
+          console.error("Error updating data:", error);
         });
     } else {
       axios({
         url: "http://localhost:3000/stokBarang",
         method: "POST",
         data: {
-          nama_barang: nama,
-          stok: stok,
-          jenis_barang: jenis,
-        },
-        headers: {
-          authorization: localStorage.getItem("authorization"),
+          produk: produk,
+          plat: plat,
         },
       })
         .then((response) => {
           const newRecord = response.data.data;
-          setStokBarang((prevData) => [...prevData, newRecord]);
+          setPenjualan((prevData) => [...prevData, newRecord]);
           message.success(response.data.message);
         })
         .catch((error) => {
-          message.error(error.response.data.message);
+          console.error("Error adding new data:", error);
         });
     }
 
     setIsModalVisible(false);
-    setNama("");
-    setJenis("Jenis Barang");
-    setStok(0);
+    setProduk("");
+    setPlat("");
     setEditingData(null);
   };
-  const handleOkStok = () => {
-    if (statusStok == "tambah") {
-      axios({
-        url: `http://localhost:3000/stokBarang/add/${idBarang}`,
-        method: "PATCH",
-        data: {
-          jumlah,
-        },
-        headers: {
-          authorization: localStorage.getItem("authorization"),
-        },
-      })
-        .then((response) => {
-          message.success(response.data.message);
-        })
-        .catch((error) => {
-          message.error(error.response.data.message);
-        });
-    } else if (statusStok == "kurang") {
-      axios({
-        url: `http://localhost:3000/stokBarang/reduce/${idBarang}`,
-        method: "PATCH",
-        data: {
-          jumlah,
-        },
-        headers: {
-          authorization: localStorage.getItem("authorization"),
-        },
-      })
-        .then((response) => {
-          const newRecord = response.data.data;
-          setStokBarang((prevData) => [...prevData, newRecord]);
-          message.success(response.data.message);
-        })
-        .catch((error) => {
-          message.error(error.response.data.message);
-        });
-    }
 
-    setIsModalStokVisible(false);
-    setJumlah("");
+  const handleDateChange = (dates, dateStrings) => {
+    setAwal(dateStrings[0]);
+    setAkhir(dateStrings[1]);
   };
 
   const handleEdit = (data) => {
     setEditingData(data);
     setIsModalVisible(true);
-    setNama(data.nama_barang || "");
-    setJenis(data.jenis_barang || "");
+    setProduk(data.produk || "");
+    setPlat(data.plat || "");
   };
 
   const handleSingleDateChange = (date, dateString) => {
@@ -209,32 +164,6 @@ function HomePage() {
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    setEditingData(null);
-    setNama("");
-    setJenis("Jenis Barang");
-    setStok(0);
-  };
-
-  const handleCancelStok = () => {
-    setIsModalStokVisible(false);
-    setEditingData("");
-    setJumlah("");
-  };
-
-  const handleChange = (value) => {
-    setJenis(value);
-  };
-
-  const handlePlus = (id) => {
-    setIsModalStokVisible(true);
-    setStatusStok("tambah");
-    setIdBarang(id);
-  };
-
-  const handleMinus = (id) => {
-    setIsModalStokVisible(true);
-    setStatusStok("kurang");
-    setIdBarang(id);
   };
 
   const ColumnStokBarang = [
@@ -268,17 +197,10 @@ function HomePage() {
       },
     },
     {
-      title: "Jenis Barang",
-      align: "center",
-      render: (data) => {
-        return data?.jenis_barang;
-      },
-    },
-    {
       title: "Transaksi Terakhir",
       align: "center",
       render: (data) => {
-        const formattedDate = new Date(data?.tanggal_transaksi);
+        const formattedDate = new Date(data.tanggal_transaksi);
         const options = {
           weekday: "long",
           day: "numeric",
@@ -301,9 +223,6 @@ function HomePage() {
             axios({
               url: `http://localhost:3000/stokBarang/${id}`,
               method: "DELETE",
-              headers: {
-                authorization: localStorage.getItem("authorization"),
-              },
             })
               .then((response) => {
                 message.success(response.data.message);
@@ -312,28 +231,13 @@ function HomePage() {
               .catch((error) => {
                 message.error("Error deleting data");
               });
-          } else if (e.key == "detail") {
-            navigate(`/${id}`);
-          } else if (e.key == "plus") {
-            handlePlus(id);
-          } else if (e.key == "minus") {
-            handleMinus(id);
           }
         };
 
         const menu = (
           <Menu onClick={(e) => handleMenuClick(e, data.id)}>
-            <Menu.Item key="detail">
-              <InfoCircleOutlined /> Detail
-            </Menu.Item>
             <Menu.Item key="edit">
               <EditOutlined /> Edit
-            </Menu.Item>
-            <Menu.Item key="plus">
-              <PlusCircleOutlined /> Stok
-            </Menu.Item>
-            <Menu.Item key="minus">
-              <PlusCircleOutlined /> Penjualan
             </Menu.Item>
             <Menu.Item key="delete" style={{ color: "red" }}>
               <DeleteOutlined />
@@ -359,6 +263,46 @@ function HomePage() {
       },
     },
   ];
+  const handleDownload = () => {
+    const queryParams = {
+      limit: limit,
+      exportExcel: true,
+    };
+
+    if (selectedSingleDate !== null) {
+      queryParams.tanggal = selectedSingleDate;
+    }
+
+    if (dataSearch !== null) {
+      queryParams.search = dataSearch;
+    }
+
+    if (awal && akhir) {
+      queryParams.awal = awal;
+      queryParams.akhir = akhir;
+    }
+
+    axios({
+      url: "http://localhost:3000/stokBarang",
+      method: "GET",
+      params: queryParams,
+      responseType: "blob",
+      headers: {
+        authorization: localStorage.getItem("authorization"),
+      },
+    })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "stokBarang.xlsx";
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Error downloading data:", error);
+      });
+  };
 
   return (
     <>
@@ -375,31 +319,33 @@ function HomePage() {
           </div>
 
           {/* Filter */}
-          <div className="flex w-full justify-between px-5 py-3">
+          <div className="flex w-full justify-between p-3">
             <Search
               placeholder="Cari data"
               onSearch={handleSearch}
-              style={{ width: 400, marginBottom: 16 }}
+              style={{ width: 200, marginBottom: 16 }}
             />
-
-            <div className="flex gap-3">
-              <button
-                className=" bg-blue-600 w-[100px] h-[30px] rounded-lg text-white"
-                onClick={showModal}
-              >
-                Tambah
-              </button>
-              <button
-                className=" bg-blue-600 w-[100px] h-[30px] rounded-lg text-white"
-                onClick={(e) => {
-                  localStorage.clear(),
-                    navigate("/login"),
-                    message.success("Sampai jumpa lagi !!");
-                }}
-              >
-                Logout
-              </button>
+            <div style={{ marginBottom: 16 }}>
+              <RangePicker onChange={handleDateChange} />
             </div>
+
+            <DatePicker
+              onChange={handleSingleDateChange}
+              style={{ marginLeft: 16, marginBottom: 16 }}
+            />
+            <button
+              className=" bg-blue-600 w-[100px] h-[30px] rounded-lg text-white"
+              onClick={showModal}
+            >
+              Tambah
+            </button>
+
+            <button
+              className="bg-blue-600 w-[100px] h-[30px] rounded-lg text-white"
+              onClick={handleDownload}
+            >
+              Download
+            </button>
           </div>
 
           {/* Tabel */}
@@ -407,7 +353,7 @@ function HomePage() {
             <Table
               size="small"
               columns={ColumnStokBarang}
-              dataSource={Array.isArray(stokBarang) ? stokBarang : []}
+              dataSource={Array.isArray(penjualan) ? penjualan : []}
               pagination={false}
               scroll={{
                 y: 420,
@@ -428,67 +374,27 @@ function HomePage() {
 
           <Modal
             title={
-              editingData
-                ? "Edit Data Stok Barang"
-                : "Tambah Data Stok Barang Baru"
+              editingData ? "Edit Data Penjualan" : "Tambah Data Penjualan Baru"
             }
             visible={isModalVisible}
             onOk={handleOk}
             onCancel={handleCancel}
           >
-            <div className="flex  my-5 gap-3 flex-wrap">
+            <div className="flex justify-between my-5">
               <input
                 type="text"
-                placeholder="Nama Barang"
-                value={nama || (editingData ? editingData.nama : "")}
-                className="border-[2px] w-[220px] border-slate-500 rounded-md px-2 py-1 text-md"
-                onChange={(e) => setNama(e.target.value)}
+                placeholder="Produk"
+                value={produk || (editingData ? editingData.produk : "")}
+                className="border-[2px] w-[230px] border-slate-500 rounded-md px-2 py-1 text-md"
+                onChange={(e) => setProduk(e.target.value)}
               />
               <br />
-              {editingData ? null : (
-                <input
-                  type="text"
-                  placeholder="Stok"
-                  value={stok || (editingData ? editingData.stok : "")}
-                  className="border-[2px] w-[220px] border-slate-500 rounded-md px-2 py-1 text-md "
-                  onChange={(e) => setStok(e.target.value)}
-                />
-              )}
-              <Select
-                value={jenis || (editingData ? editingData.jenis : "")}
-                className="border-[2px] w-[220px] border-slate-500 rounded-md  text-md"
-                onChange={handleChange}
-                options={[
-                  {
-                    value: "Konsumsi",
-                    label: "Konsumsi",
-                  },
-                  {
-                    value: "Pembersih",
-                    label: "Pembersih",
-                  },
-                ]}
-              />
-            </div>
-          </Modal>
-
-          <Modal
-            title={
-              statusStok == "tambah"
-                ? "Tambah Stok Barang"
-                : "Tambah Penjualan Barang"
-            }
-            visible={isModalStokVisible}
-            onOk={handleOkStok}
-            onCancel={handleCancelStok}
-          >
-            <div className="flex  my-5 gap-3 flex-wrap">
               <input
                 type="text"
-                placeholder="Jumlah"
-                value={jumlah}
-                className="border-[2px] w-[220px] border-slate-500 rounded-md px-2 py-1 text-md"
-                onChange={(e) => setJumlah(e.target.value)}
+                placeholder="Plat"
+                value={plat || (editingData ? editingData.plat : "")}
+                className="border-[2px] w-[230px] border-slate-500 rounded-md px-2 py-1 text-md"
+                onChange={(e) => setPlat(e.target.value)}
               />
             </div>
           </Modal>
@@ -498,4 +404,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default DetailPage;

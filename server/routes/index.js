@@ -1,5 +1,4 @@
 const stokBarangRouter = require("./stokbarang");
-const inventoryRouter = require("./stokbarang");
 const userRouter = require("./user");
 
 const router = require("express").Router();
