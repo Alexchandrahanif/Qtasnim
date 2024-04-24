@@ -79,8 +79,9 @@ class Controller {
   // CREATE
   static async create(req, res, next) {
     try {
-      const {} = req.body;
-      let body = {};
+      const { nama_barang, stok, jenis_barang } = req.body;
+
+      let body = { nama_barang, stok, jenis_barang };
 
       const data = await StokBarang.create(body);
 
@@ -98,6 +99,9 @@ class Controller {
   static async addingStock(req, res, next) {
     try {
       const { id } = req.params;
+
+      const { jumlah } = req.body;
+
       const data = await StokBarang.findOne({
         where: {
           id,
@@ -107,6 +111,20 @@ class Controller {
       if (!data) {
         throw { name: "Id Stok barang Tidak Ditemukan" };
       }
+
+      let body = {
+        keterangan: "Barang Masuk",
+        jumlah: jumlah,
+        UserId: req.user.id,
+        StokBarangId: id,
+      };
+
+      await History.create(body);
+
+      await StokBarang.update({
+        stok: data.stok + jumlah,
+        tanggal_transaksi: new Date(),
+      });
 
       res.status(200).json({
         statusCode: 200,
@@ -121,6 +139,9 @@ class Controller {
   static async reduceStock(req, res, next) {
     try {
       const { id } = req.params;
+
+      const { jumlah } = req.body;
+
       const data = await StokBarang.findOne({
         where: {
           id,
@@ -130,6 +151,24 @@ class Controller {
       if (!data) {
         throw { name: "Id Stok barang Tidak Ditemukan" };
       }
+
+      if (jumlah > data.stok) {
+        throw { name: "Stok Tersedia Kurang Dari", stok: jumlah };
+      }
+
+      let body = {
+        keterangan: "Barang Keluar",
+        jumlah: jumlah,
+        UserId: req.user.id,
+        StokBarangId: id,
+      };
+
+      await History.create(body);
+
+      await StokBarang.update({
+        stok: data.stok - jumlah,
+        tanggal_transaksi: new Date(),
+      });
 
       res.status(200).json({
         statusCode: 200,

@@ -42,6 +42,9 @@ const handleError = (err, req, res, next) => {
   } else if (err.name === "Konfirmasi Password Tidak Cocok") {
     code = 400;
     message = "Konfirmasi Password Tidak Cocok";
+  } else if (err.name === `Stok Tersedia Kurang Dari`) {
+    code = 400;
+    message = `Stok Tersedia Kurang Dari ${err.stok}`;
   }
 
   // 404

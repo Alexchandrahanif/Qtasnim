@@ -1,0 +1,38 @@
+[
+  {
+    "nama_barang": "Kopi",
+    "stok": 1000,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Konsumsi"
+  },
+  {
+    "nama_barang": "Teh",
+    "stok": 1000,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Konsumsi"
+  },
+  {
+    "nama_barang": "Gula",
+    "stok": 1000,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Konsumsi"
+  },
+  {
+    "nama_barang": "Pasta Gigi",
+    "stok": 1000,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Pembersih"
+  },
+  {
+    "nama_barang": "Sampo",
+    "stok": 1000,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Pembersih"
+  },
+  {
+    "nama_barang": "Sabun Mandi",
+    "stok": 1000,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Pembersih"
+  }
+]
