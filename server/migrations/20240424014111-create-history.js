@@ -25,7 +25,7 @@ module.exports = {
       UserId: {
         type: Sequelize.UUID,
       },
-      InventoryId: {
+      StokBarangId: {
         type: Sequelize.UUID,
       },
       createdAt: {

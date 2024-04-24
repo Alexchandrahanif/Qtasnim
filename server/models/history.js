@@ -3,7 +3,12 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class History extends Model {
     static associate(models) {
-      //
+      History.belongsTo(models.StokBarang, {
+        foreignKey: "StokBarangId",
+      });
+      History.belongsTo(models.User, {
+        foreignKey: "UserId",
+      });
     }
   }
   History.init(
@@ -11,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       keterangan: DataTypes.STRING,
       jumlah: DataTypes.INTEGER,
       UserId: DataTypes.UUID,
-      InventoryId: DataTypes.UUID,
+      StokBarangId: DataTypes.UUID,
     },
     {
       sequelize,

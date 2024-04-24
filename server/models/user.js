@@ -4,7 +4,14 @@ const { hashingPassword } = require("../helper/helper");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // define association here
+      User.belongsToMany(models.StokBarang, {
+        through: models.History,
+        foreignKey: "UserId",
+      });
+
+      User.hasMany(models.History, {
+        foreignKey: "UserId",
+      });
     }
   }
   User.init(

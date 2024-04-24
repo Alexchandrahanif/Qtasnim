@@ -1,4 +1,4 @@
-const Controller = require("../controllers/inventory");
+const Controller = require("../controllers/stokBarang");
 const authentication = require("../middleware/authentication");
 
 const inventoryRouter = require("express").Router();
