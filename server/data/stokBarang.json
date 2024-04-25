@@ -34,5 +34,59 @@
     "stok": 1000,
     "jumlah_terjual": 0,
     "jenis_barang": "Pembersih"
+  },
+  {
+    "nama_barang": "Biskuit",
+    "stok": 800,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Konsumsi"
+  },
+  {
+    "nama_barang": "Minyak Goreng",
+    "stok": 1200,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Konsumsi"
+  },
+  {
+    "nama_barang": "Shampoo",
+    "stok": 900,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Pembersih"
+  },
+  {
+    "nama_barang": "Odol",
+    "stok": 700,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Pembersih"
+  },
+  {
+    "nama_barang": "Tisu Basah",
+    "stok": 1500,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Pembersih"
+  },
+  {
+    "nama_barang": "Sikat Gigi",
+    "stok": 800,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Pembersih"
+  },
+  {
+    "nama_barang": "Sirup",
+    "stok": 1000,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Konsumsi"
+  },
+  {
+    "nama_barang": "Lap Pembersih",
+    "stok": 600,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Pembersih"
+  },
+  {
+    "nama_barang": "Super Pel",
+    "stok": 700,
+    "jumlah_terjual": 0,
+    "jenis_barang": "Pembersih"
   }
 ]

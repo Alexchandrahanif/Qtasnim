@@ -240,7 +240,7 @@ function HomePage() {
   const ColumnStokBarang = [
     {
       title: "No",
-      width: 100,
+      width: 60,
       align: "center",
       render: (data, record, index) => {
         return index + 1;
@@ -249,6 +249,7 @@ function HomePage() {
     {
       title: "Nama Barang",
       align: "center",
+      width: 180,
       render: (data) => {
         return data?.nama_barang;
       },
@@ -256,6 +257,7 @@ function HomePage() {
     {
       title: "Stok",
       align: "center",
+      width: 90,
       render: (data) => {
         return data?.stok;
       },
@@ -263,6 +265,7 @@ function HomePage() {
     {
       title: "Jumlah Terjual",
       align: "center",
+      width: 150,
       render: (data) => {
         return data?.jumlah_terjual;
       },
@@ -270,6 +273,7 @@ function HomePage() {
     {
       title: "Jenis Barang",
       align: "center",
+      width: 120,
       render: (data) => {
         return data?.jenis_barang;
       },

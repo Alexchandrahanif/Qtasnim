@@ -6,7 +6,7 @@ const dataStokBarang = require("../data/stokBarang.json");
 module.exports = {
   async up(queryInterface, Sequelize) {
     dataStokBarang.forEach((el) => {
-      el.createdAt = el.updatedAt = new Date();
+      el.createdAt = el.updatedAt = el.tanggal_transaksi = new Date();
     });
     await queryInterface.bulkInsert("StokBarangs", dataStokBarang, {});
   },
