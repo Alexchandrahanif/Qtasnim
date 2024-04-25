@@ -3,6 +3,7 @@ const authentication = require("../middleware/authentication");
 const stokBarangRouter = require("express").Router();
 
 stokBarangRouter.get("/", authentication, Controller.getAll);
+stokBarangRouter.get("/history/:id", authentication, Controller.getAllHistory);
 stokBarangRouter.get("/:id", authentication, Controller.getOne);
 stokBarangRouter.post("/", authentication, Controller.create);
 stokBarangRouter.patch("/:id", authentication, Controller.update);

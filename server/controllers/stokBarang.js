@@ -1,6 +1,7 @@
 const { StokBarang, History, User } = require("../models");
 const moment = require("moment");
 const { Op } = require("sequelize");
+const { exportToExcel } = require("../helper/excel");
 
 class Controller {
   // GET ALL
@@ -252,6 +253,76 @@ class Controller {
         statusCode: 200,
         message: "Berhasil Menghapus Data Stok Barang",
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // GET ALL HISTORY
+  static async getAllHistory(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { limit, page, search, tanggal, awal, akhir, exportExcel } =
+        req.query;
+
+      let pagination = {
+        limit: limit ? limit : 50,
+        order: [["createdAt", "DESC"]],
+        where: {
+          StokBarangId: id,
+        },
+        include: [
+          {
+            model: User,
+          },
+          {
+            model: StokBarang,
+          },
+        ],
+      };
+
+      if (page) {
+        pagination.offset = (page - 1) * (limit ? limit : 50);
+      }
+
+      if (awal && akhir) {
+        const startDate = moment(awal, "YYYY-MM-DD").startOf("day").format();
+        const endDate = moment(akhir, "YYYY-MM-DD").endOf("day").format();
+
+        pagination.where.createdAt = {
+          [Op.between]: [startDate, endDate],
+        };
+      } else if (tanggal) {
+        const pagi = moment().format(`${tanggal} 00:00`);
+        const masuk = moment().format(`${tanggal} 23:59`);
+        pagination.where.createdAt = {
+          [Op.between]: [pagi, masuk],
+        };
+      }
+
+      if (search) {
+        pagination.where.keterangan = {
+          [Op.iLike]: `%${search}%`,
+        };
+      }
+
+      if (exportExcel) {
+        let dataDaftarPenjualan = await History.findAll(pagination);
+
+        exportToExcel(dataDaftarPenjualan, res);
+      } else {
+        let dataHistory = await History.findAndCountAll(pagination);
+
+        let totalPage = Math.ceil(dataHistory.count / (limit ? limit : 50));
+
+        res.status(200).json({
+          statusCode: 200,
+          message: "Berhasil Mendapatkan Semua Data History Penjualan",
+          data: dataHistory.rows,
+          totaldataHistory: dataHistory.count,
+          totalPage: totalPage,
+        });
+      }
     } catch (error) {
       next(error);
     }

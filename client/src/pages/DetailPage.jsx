@@ -32,10 +32,13 @@ const { RangePicker } = DatePicker;
 const { Search } = Input;
 const { Option } = Select;
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function DetailPage() {
   const navigate = useNavigate();
+
+  let { id } = useParams();
+
   const [penjualan, setPenjualan] = useState([]);
   const [awal, setAwal] = useState(null);
   const [akhir, setAkhir] = useState(null);
@@ -72,7 +75,7 @@ function DetailPage() {
     }
 
     axios({
-      url: "http://localhost:3000/stokBarang",
+      url: `http://localhost:3000/stokBarang/history/${id}`,
       method: "GET",
       params: queryParams,
       headers: {
@@ -179,28 +182,35 @@ function DetailPage() {
       title: "Nama Barang",
       align: "center",
       render: (data) => {
-        return data?.nama_barang;
+        return data?.StokBarang?.nama_barang;
       },
     },
     {
-      title: "Stok",
+      title: "Jumlah",
       align: "center",
       render: (data) => {
-        return data?.stok;
+        return data?.jumlah;
       },
     },
     {
-      title: "Jumlah Terjual",
+      title: "Keterangan",
       align: "center",
       render: (data) => {
-        return data?.jumlah_terjual;
+        return data?.keterangan;
+      },
+    },
+    {
+      title: "Kasir",
+      align: "center",
+      render: (data) => {
+        return data?.User?.nama;
       },
     },
     {
       title: "Transaksi Terakhir",
       align: "center",
       render: (data) => {
-        const formattedDate = new Date(data.tanggal_transaksi);
+        const formattedDate = new Date(data.createdAt);
         const options = {
           weekday: "long",
           day: "numeric",
@@ -208,58 +218,6 @@ function DetailPage() {
           year: "numeric",
         };
         return formattedDate.toLocaleDateString("id-ID", options);
-      },
-    },
-    {
-      title: "Action",
-      fixed: "right",
-      align: "center",
-      width: 75,
-      render: (data) => {
-        const handleMenuClick = (e, id) => {
-          if (e.key === "edit") {
-            handleEdit(data);
-          } else if (e.key === "delete") {
-            axios({
-              url: `http://localhost:3000/stokBarang/${id}`,
-              method: "DELETE",
-            })
-              .then((response) => {
-                message.success(response.data.message);
-                setHapus(!hapus);
-              })
-              .catch((error) => {
-                message.error("Error deleting data");
-              });
-          }
-        };
-
-        const menu = (
-          <Menu onClick={(e) => handleMenuClick(e, data.id)}>
-            <Menu.Item key="edit">
-              <EditOutlined /> Edit
-            </Menu.Item>
-            <Menu.Item key="delete" style={{ color: "red" }}>
-              <DeleteOutlined />
-              Hapus
-            </Menu.Item>
-          </Menu>
-        );
-
-        return (
-          <Fragment>
-            <Dropdown overlay={menu} trigger={["click"]}>
-              <a
-                className="ant-dropdown-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <DownCircleOutlined className="text-lg text-slate-500" />
-              </a>
-            </Dropdown>
-          </Fragment>
-        );
       },
     },
   ];
@@ -283,7 +241,7 @@ function DetailPage() {
     }
 
     axios({
-      url: "http://localhost:3000/stokBarang",
+      url: `http://localhost:3000/stokBarang/history/${id}`,
       method: "GET",
       params: queryParams,
       responseType: "blob",
@@ -295,7 +253,7 @@ function DetailPage() {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const a = document.createElement("a");
         a.href = url;
-        a.download = "stokBarang.xlsx";
+        a.download = "History.xlsx";
         a.click();
         window.URL.revokeObjectURL(url);
       })
@@ -323,7 +281,7 @@ function DetailPage() {
             <Search
               placeholder="Cari data"
               onSearch={handleSearch}
-              style={{ width: 200, marginBottom: 16 }}
+              style={{ width: 300, marginBottom: 16 }}
             />
             <div style={{ marginBottom: 16 }}>
               <RangePicker onChange={handleDateChange} />
@@ -333,12 +291,6 @@ function DetailPage() {
               onChange={handleSingleDateChange}
               style={{ marginLeft: 16, marginBottom: 16 }}
             />
-            <button
-              className=" bg-blue-600 w-[100px] h-[30px] rounded-lg text-white"
-              onClick={showModal}
-            >
-              Tambah
-            </button>
 
             <button
               className="bg-blue-600 w-[100px] h-[30px] rounded-lg text-white"
